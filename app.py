@@ -1,5 +1,6 @@
 from flask import Flask, render_template, Response, request, jsonify
 from database.supabase_client import supabase
+
 import cv2
 import face_recognition
 import json
