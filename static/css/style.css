@@ -1,0 +1,281 @@
+/* global start */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+/* global end */
+
+/* Navbar start */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #4a90e2, #357ab7);
+    padding: 1rem 2rem;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.nav-content {
+    display: flex;
+    gap: 1.5rem;
+}
+
+a {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+a:hover {
+    color: #ffd700;
+    transform: scale(1.05);
+}
+/* Navbar end */
+
+/* Index start */
+.face-recognition {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding: 1rem;
+}
+/* Index end */
+
+/* Camera section start */
+.camera-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.user-camera {
+    position: relative;
+    border: 2px solid #ccc;
+    border-radius: 0.75rem;
+    object-fit: cover;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+/* Camera section end */
+
+/* result section start */
+.result-section {
+    flex: 1;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.75rem;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 250px;
+}
+
+.result-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.result-section ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.result-section li {
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-section li:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+/* result section end */
+
+/* Add user section start */
+.add-user-section {
+    flex: 1;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.75rem;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 250px;
+}
+
+.add-user-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.add-user-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.75rem;
+    background: white;
+}
+
+.add-user-form label {
+    font-weight: 600;
+    color: #444;
+}
+
+.add-user-form input,
+.add-user-form button {
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.add-user-form input:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+.add-user-form button {
+    background: #4a90e2;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.add-user-form button:hover {
+    background: #357ab7;
+    transform: scale(1.05);
+}
+/* Add user section end */
+
+/* Database Section */
+.database {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.database h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Table styling */
+#user-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.95rem;
+    background: #fdfdfd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#user-table th, 
+#user-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+#user-table th {
+    background: #007BFF;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#user-table tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+#user-table tr:hover {
+    background: #f1f7ff;
+    transition: 0.2s ease-in-out;
+}
+
+/* Action buttons */
+#user-table td .action-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.2s ease-in-out;
+}
+
+#user-table td .delete-btn {
+    background: #dc3545;
+    color: white;
+}
+
+#user-table td .delete-btn:hover {
+    background: #a71d2a;
+}
+
+#user-table td .edit-btn {
+    background: #28a745;
+    color: white;
+    margin-left: 5px;
+}
+
+#user-table td .edit-btn:hover {
+    background: #1e7e34;
+}
+
+/* Delete button styling */
+#user-table td .delete-btn {
+    background: #e63946;          /* merah tegas */
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: all 0.25s ease-in-out;
+}
+
+#user-table td .delete-btn:hover {
+    background: #c71c2c;          /* merah lebih gelap */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#user-table td .delete-btn:active {
+    transform: scale(0.95);
+    background: #a11321;          /* lebih gelap saat ditekan */
+}

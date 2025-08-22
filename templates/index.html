@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Index page{% endblock %}
+
+{% block content %}
+<div class="face-recognition">
+    <div class="camera-section">
+        <img src="{{ url_for('video_feed') }}" alt="Camera Stream" class="user-camera">
+    </div>
+
+    <div class="result-section">
+        <h3 class="result-title">Recognition Result</h3>
+        <ul id="result">
+            <li>Waiting for recognition...</li>
+        </ul>
+    </div>
+
+    <div class="add-user-section">
+        <h3 class="add-user-title">Add User</h3>
+        <form method="POST" action="{{ url_for('add_user') }}" class="add-user-form">
+            <label for="username">Username:</label>
+            <input type="text" name="username" placeholder="Username" required><br>
+            <label for="major">Major:</label>
+            <input type="text" name="major" placeholder="Major" required><br>
+            <input type="submit" value="Add">
+        </form>
+    </div>
+</div>
+
+<div class="database">
+    <h3>Database Users</h3>
+    <table border="1" id="user-table" style="width:100%; text-align:center;">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Major</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="user-body">
+            <!-- Data akan diisi dengan JS -->
+        </tbody>
+    </table>
+</div>
+{% endblock %}
