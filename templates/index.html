@@ -18,22 +18,43 @@
         <h3 class="add-user-title">Add User</h3>
         <form method="POST" action="{{ url_for('add_user') }}" class="add-user-form">
             <label for="username">Username:</label>
-            <input type="text" name="username" placeholder="Username" required><br>
-            <label for="major">Major:</label>
-            <input type="text" name="major" placeholder="Major" required><br>
+            <input type="text" name="username" placeholder="Username" required>
+            <label for="jenis-Kelamin">Jenis Kelamin:</label>
+            <select name="jenis-Kelamin" id="jenis-Kelamin" required>
+                <option value="" disabled selected class="option-disabled">Pilih jenis kelamin</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+            </select>
+            <label for="jurusan">Jurusan:</label>
+            <input type="text" name="jurusan" placeholder="Jurusan" required>
             <input type="submit" value="Add">
         </form>
     </div>
 </div>
 
 <div class="database">
-    <h3>Database Users</h3>
+    <div class="database-heading">
+        <h3>Database Users</h3>
+        <div class="download-button">
+            <!-- Search bar -->
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search user...">
+            </div>
+            <button onclick="window.location.href='/download_users_csv'">
+                Download Csv
+            </button>
+            <button onclick="window.location.href='/download_users_excel'">
+                Download Excel
+            </button>
+        </div>
+    </div>
     <table border="1" id="user-table" style="width:100%; text-align:center;">
         <thead>
             <tr>
                 <th>User ID</th>
                 <th>Username</th>
-                <th>Major</th>
+                <th>Jenis Kelamin</th>
+                <th>Jurusan</th>
                 <th>Action</th>
             </tr>
         </thead>

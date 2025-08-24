@@ -135,7 +135,7 @@ a:hover {
 .add-user-form {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.4rem;
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 0.75rem;
@@ -148,8 +148,10 @@ a:hover {
 }
 
 .add-user-form input,
+.add-user-form select,
 .add-user-form button {
     padding: 0.6rem;
+    margin-bottom: 0.2rem;
     border: 1px solid #ccc;
     border-radius: 0.5rem;
     font-size: 1rem;
@@ -178,17 +180,68 @@ a:hover {
 .database {
     margin-top: 2rem;
     padding: 1.5rem;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #ccc;
+    border-radius: 0.75rem;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.database h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    text-align: center;
+.database-heading {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.database-heading h3 {
+    font-size: 2rem; 
     font-weight: bold;
-    color: #333;
+    color: #222; 
+    margin: 0;
+}
+
+.database-heading button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.database-heading button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+/* Search bar styling */
+.search-bar {
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    margin-top: 1rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 19rem;
+}
+
+.search-bar input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 3px 10px rgba(74,144,226,0.3);
 }
 
 /* Table styling */
@@ -257,7 +310,7 @@ a:hover {
 
 /* Delete button styling */
 #user-table td .delete-btn {
-    background: #e63946;          /* merah tegas */
+    background: #e63946;      
     color: #fff;
     border: none;
     padding: 8px 14px;
@@ -270,12 +323,12 @@ a:hover {
 }
 
 #user-table td .delete-btn:hover {
-    background: #c71c2c;          /* merah lebih gelap */
+    background: #c71c2c;          
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 #user-table td .delete-btn:active {
     transform: scale(0.95);
-    background: #a11321;          /* lebih gelap saat ditekan */
+    background: #a11321;        
 }

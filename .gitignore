@@ -1,16 +1,41 @@
-# Python cache
+# Python cache / compiled
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.pyd
+*.so
 
-# Virtual environment
+# Virtual environments
 env/
+venv/
+.venv/
 
 # Environment variables
 .env
+.env.*
+!.env.example   # biar contoh env tetap ke-track
 
-# VSCode settings (optional)
+# VSCode / IDE settings
 .vscode/
+.idea/
 
 # System files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Coverage / testing
+.coverage
+htmlcov/
+
+# Node.js (kalau pakai frontend tooling di static/)
+node_modules/
