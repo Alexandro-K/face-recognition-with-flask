@@ -272,7 +272,8 @@ def download_users_excel():
 # ==============================
 # Run App
 # ==============================
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))  # Railway kasih PORT env
+    app.run(host="0.0.0.0", port=port)
+
 
