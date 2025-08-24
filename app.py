@@ -10,15 +10,6 @@ import json
 import threading
 import csv
 import os
-
-CAMERA_SOURCE = os.getenv("CAMERA_SOURCE", "0")  # "0" atau URL RTSP/MJPEG
-def open_camera():
-    try:
-        src = int(CAMERA_SOURCE)
-    except ValueError:
-        src = CAMERA_SOURCE
-    return cv2.VideoCapture(src)
-
 # ==============================
 # Load Known Faces
 # ==============================
@@ -62,7 +53,7 @@ process_this_frame = True
 def gen_frames_recog():
     global last_recognition_data, last_unknown_encoding, frame_count
 
-    camera = open_camera()
+    camera = cv2.VideoCapture(0)
     while True:
         ret, frame = camera.read()
         frame_count += 1
@@ -273,7 +264,7 @@ def download_users_excel():
 # Run App
 # ==============================
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))  # Railway kasih PORT env
-    app.run(host="0.0.0.0", port=port)
-
+    port = int(os.environ.get("PORT", 8080))
+    debug_mode = os.environ.get("FLASK_ENV") != "production"
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
 
