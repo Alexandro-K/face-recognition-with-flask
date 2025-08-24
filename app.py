@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request, jsonify, send_file
+from flask import Flask, render_template, Response, request, jsonify, send_file, redirect, url_for
 from database.supabase_client import supabase
 from openpyxl import Workbook
 from io import BytesIO
@@ -172,8 +172,8 @@ def add_user():
         jenis_kelamin = request.form.get("jenis-Kelamin")
         jurusan = request.form.get('jurusan')
 
-        if last_unknown_encoding is None:
-            return "No unknown face to save", 400
+        # if last_unknown_encoding is None:
+        #     return "No unknown face to save", 400
 
         # Save new user to database
         supabase.table("face-recognition-with-flask").insert({
@@ -189,9 +189,9 @@ def add_user():
         known_ids, known_encodings = load_known_faces()
 
         last_unknown_encoding = None
-        return render_template("index.html")
+        return redirect(url_for("index"))
 
-    return render_template("index.html")
+    return redirect(url_for("index"))
 
 @app.route('/users')
 def users():
