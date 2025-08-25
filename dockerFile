@@ -1,65 +1,36 @@
-# Use Ubuntu base image instead of Python slim for better compatibility
-FROM ubuntu:22.04
+# Gunakan base image Python
+FROM python:3.11-slim
 
-# Set environment variables to avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# Set env variables
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies including Python and required libraries
+# Install dependencies system untuk dlib, opencv, dsb.
 RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    python3-dev \
     build-essential \
     cmake \
-    libopenblas-dev \
-    liblapack-dev \
-    libx11-6 \
-    libxext6 \
-    libxrender1 \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    libgtk-3-0 \
+    libboost-all-dev \
     libsm6 \
-    libice6 \
-    libxrandr2 \
-    libxss1 \
-    libxcursor1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxtst6 \
-    libxfixes3 \
-    libxi6 \
-    libasound2 \
-    libatk1.0-0 \
-    libdrm2 \
-    libxkbcommon0 \
-    libatspi2.0-0 \
+    libxext6 \
+    libxrender-dev \
+    libgl1 \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Create symlink for python3 to python if needed
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-
-# Set working directory
+# Buat folder kerja
 WORKDIR /app
 
-# Copy requirements first for better caching
+# Copy requirements
 COPY requirements.txt .
 
-# Upgrade pip and install Python dependencies
-RUN pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir -r requirements.txt
+# Install pip deps
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy semua source code
 COPY . .
 
-# Set environment variables
-ENV PORT=8080
-ENV FLASK_ENV=production
+# Expose port (Railway otomatis pakai $PORT)
+EXPOSE 8080
 
-# Expose the port
-EXPOSE $PORT
-
-# Use gunicorn to run the application
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "main:app"]
+# Jalankan dengan Gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "main:app"]
