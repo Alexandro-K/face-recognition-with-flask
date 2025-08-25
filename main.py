@@ -13,6 +13,13 @@ import os
 
 import base64
 import numpy as np
+
+# ==============================
+# Flask Instance
+# ==============================
+app = Flask(__name__, template_folder='templates', static_folder='static', static_url_path='/')
+
+
 # ==============================
 # Load Known Faces
 # ==============================
@@ -35,11 +42,6 @@ def load_known_faces():
         known_encodings.append(encoding)
         
     return known_ids, known_encodings
-
-# ==============================
-# Flask Instance
-# ==============================
-app = Flask(__name__, template_folder='templates', static_folder='static', static_url_path='/')
 
 known_ids, known_encodings = load_known_faces()
 
@@ -248,4 +250,5 @@ def download_users_excel():
 # ==============================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    debug_mode = os.environ.get("FLASK_ENV") != "production"
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
