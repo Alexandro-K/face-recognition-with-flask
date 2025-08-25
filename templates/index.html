@@ -3,8 +3,12 @@
 
 {% block content %}
 <div class="face-recognition">
-    <div class="camera-section">
-        <img src="{{ url_for('video_feed') }}" alt="Camera Stream" class="user-camera">
+    <div class="camera-section" style="position: relative; display: inline-block;">
+        <video id="userCam" class="user-camera" autoplay playsinline></video>
+        <!-- Canvas untuk menggambar bounding box -->
+        <canvas id="overlay" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
+        <!-- Canvas untuk snapshot, tetap tersembunyi -->
+        <canvas id="snapshot" style="display:none;"></canvas>
     </div>
 
     <div class="result-section">

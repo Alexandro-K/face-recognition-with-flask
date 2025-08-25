@@ -10,6 +10,9 @@ import json
 import threading
 import csv
 import os
+
+import base64
+import numpy as np
 # ==============================
 # Load Known Faces
 # ==============================
@@ -44,110 +47,90 @@ known_ids, known_encodings = load_known_faces()
 last_recognition_data = []
 last_unknown_encoding = None
 data_lock = threading.Lock()
-frame_count = 0
-process_this_frame = True
 
 # ==============================
 # Video Streaming & Recognition
 # ==============================
-def gen_frames_recog():
-    global last_recognition_data, last_unknown_encoding, frame_count
+@app.route('/process_frame', methods=['POST'])
+def process_frame():
+    global last_recognition_data, last_unknown_encoding
 
-    camera = cv2.VideoCapture(0)
-    while True:
-        ret, frame = camera.read()
-        frame_count += 1
+    data = request.json
+    img_data = data['frame'].split(",")[1]  
+    img_bytes = base64.b64decode(img_data)
+
+    # Decode image
+    nparr = np.frombuffer(img_bytes, np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    # Simpan ukuran asli untuk scaling
+    original_height, original_width = frame.shape[:2]
+    
+    # Resize kecil untuk processing
+    frame_small = cv2.resize(frame, (0, 0), None, 0.25, 0.25)
+    rgb_frame = cv2.cvtColor(frame_small, cv2.COLOR_BGR2RGB)
+
+    # Face recognition
+    face_locations = face_recognition.face_locations(rgb_frame)
+    face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
+
+    results = []
+
+    for i, face_enc in enumerate(face_encodings):
+        # Scale face location kembali ke ukuran asli
+        top, right, bottom, left = face_locations[i]
+        top *= 4
+        right *= 4
+        bottom *= 4
+        left *= 4
         
-        if frame_count % 3 == 0:
-            process_this_frame = True
+        # Convert ke format yang mudah digunakan di frontend
+        face_box = {
+            "x": left,
+            "y": top,
+            "width": right - left,
+            "height": bottom - top
+        }
+        
+        matches = face_recognition.compare_faces(known_encodings, face_enc, tolerance=0.5)
+        face_distance = face_recognition.face_distance(known_encodings, face_enc)
+
+        index = None
+        if len(face_distance) > 0:
+            index = face_distance.argmin()
+
+        if index is not None and matches[index]:
+            user_id = known_ids[index]
+            user_data = (supabase.table("face-recognition-with-flask")
+                         .select("user_id, username, jenis_kelamin, jurusan")
+                         .eq("user_id", user_id)
+                         .execute())
+            if user_data.data:
+                result = user_data.data[0]
+                result["face_box"] = face_box
+                result["is_known"] = True
+                results.append(result)
         else:
-            process_this_frame = False
-            
-        if process_this_frame:
-            if frame is None:
-                break
-            else:
-                frame_small = cv2.resize(frame, (0, 0), None, 0.25, 0.25)
-                rgb_frame = cv2.cvtColor(frame_small, cv2.COLOR_BGR2RGB)
-                face_locations = face_recognition.face_locations(rgb_frame)
-                face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
-                
-                results = []  # Save all known faces
-                
-                for face_enc, (top, right, bottom, left) in zip(face_encodings, face_locations):
-                    matches = face_recognition.compare_faces(known_encodings, face_enc, tolerance=0.6)
-                    face_distance = face_recognition.face_distance(known_encodings, face_enc)
-                                    
-                    index = None
-                    if len(face_distance) > 0:
-                        index = face_distance.argmin()
-                        
-                    is_known = False
-                    # If face is known
-                    if index is not None and matches[index]:
-                        user_id = known_ids[index]
-                        user_data = (supabase.table("face-recognition-with-flask")
-                                    .select("user_id, username, jenis_kelamin, jurusan")
-                                    .eq("user_id", user_id)
-                                    .execute())  
-                        if user_data.data:
-                            text = user_data.data[0]['username']   
-                            jenis_kelamin = user_data.data[0]['jenis_kelamin']
-                            jurusan = user_data.data[0]['jurusan']
-                            results.append({
-                                "user_id": user_id,
-                                "username": text,
-                                "jenis_kelamin": jenis_kelamin,
-                                "jurusan": jurusan
-                            })
-                            is_known = True
-                    # If face is unknown
-                    else:
-                        text = "Unknown"
-                        jenis_kelamin = "-"
-                        jurusan = "-"
-                        results.append({
-                            "user_id": None,
-                            "username": text,
-                            "jenis_kelamin": jenis_kelamin,
-                            "jurusan": jurusan,
-                        })
-                        last_unknown_encoding = json.dumps(face_enc.tolist()) # Always save the encoding if face is unknown
+            results.append({
+                "user_id": None,
+                "username": "Unknown",
+                "jenis_kelamin": "-",
+                "jurusan": "-",
+                "face_box": face_box,
+                "is_known": False
+            })
+            last_unknown_encoding = json.dumps(face_enc.tolist())
 
-                    # Draw rectangle and label
-                    top, right, bottom, left = top * 4, right * 4, bottom * 4, left * 4
-                    if is_known:
-                        cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-                        cv2.putText(frame, text, (left, top - 10),
-                                    cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
-                    else:    
-                        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-                        cv2.putText(frame, text, (left, top - 10),
-                                    cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 0, 255), 2)
+    with data_lock:
+        last_recognition_data = results
 
-                                
-                # Update data to global variable
-                with data_lock:
-                    last_recognition_data = results
-                
-                # Encode frame
-                ret, buffer = cv2.imencode('.jpg', frame)
-                frame = buffer.tobytes()
-                
-                yield(b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
+    return jsonify(results)
 # ==============================
 # Routes
 # ==============================
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen_frames_recog(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/recognition_data')
 def recognition_data():
@@ -267,4 +250,3 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     debug_mode = os.environ.get("FLASK_ENV") != "production"
     app.run(host="0.0.0.0", port=port, debug=debug_mode)
-
