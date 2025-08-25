@@ -33,4 +33,4 @@ COPY . .
 EXPOSE 8080
 
 # Jalankan dengan Gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "main:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:${PORT}", "main:app"]
