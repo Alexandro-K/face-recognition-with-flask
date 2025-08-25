@@ -136,7 +136,7 @@ async function sendFrameToServer() {
 }
 
 // Kirim frame tiap 1 detik
-setInterval(sendFrameToServer, 2000);
+setInterval(sendFrameToServer, 1000);
 
 // Refresh tiap 1 detik
 setInterval(fetchRecognitionData, 1000);

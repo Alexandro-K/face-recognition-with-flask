@@ -42,13 +42,15 @@ def load_known_faces():
         
     return known_ids, known_encodings
 
-# Load id dan encoding menggunakan functionnya
-known_ids, known_encodings = load_known_faces()
-
 # Global variables 
 last_recognition_data = [] # Untuk menyimpan hasil
 last_unknown_encoding = None # Menyimpan encoding yang akan dimasukkan kedalam database
 data_lock = threading.Lock() # Lock threading untuk mencegah bentrok antara pengambilan data dengan permintaan data
+
+# Load id dan encoding menggunakan functionnya
+
+with data_lock:
+    known_ids, known_encodings = load_known_faces()
 
 # Mengambil frame dari kamera
 @app.route('/process_frame', methods=['POST'])
@@ -70,9 +72,6 @@ def process_frame():
         print("Decode gagal!")
         return jsonify([]), 200  
 
-    # Simpan ukuran asli untuk scaling
-    original_height, original_width = frame.shape[:2]
-    
     # Resize kecil untuk processing
     frame_small = cv2.resize(frame, (0, 0), None, 0.25, 0.25)
     rgb_frame = cv2.cvtColor(frame_small, cv2.COLOR_BGR2RGB)
@@ -168,7 +167,8 @@ def add_user():
 
         # Refresh known faces
         global known_ids, known_encodings
-        known_ids, known_encodings = load_known_faces()
+        with data_lock:
+            known_ids, known_encodings = load_known_faces()
 
         last_unknown_encoding = None
         return redirect(url_for("index"))
@@ -190,7 +190,8 @@ def delete_user(user_id):
 
     # Refresh known faces
     global known_ids, known_encodings
-    known_ids, known_encodings = load_known_faces()
+    with data_lock:
+        known_ids, known_encodings = load_known_faces()
 
     return jsonify({"message": f"User {user_id} deleted successfully"})
 
