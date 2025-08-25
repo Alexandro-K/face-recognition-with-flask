@@ -56,12 +56,19 @@ def process_frame():
     global last_recognition_data, last_unknown_encoding
 
     data = request.json
-    img_data = data['frame'].split(",")[1]  
-    img_bytes = base64.b64decode(img_data)
+    img_data = data['frame']
 
-    # Decode image
+    # buang prefix "data:image/jpeg;base64,"
+    if img_data.startswith("data:image"):
+        img_data = img_data.split(",")[1]
+
+    img_bytes = base64.b64decode(img_data)
     nparr = np.frombuffer(img_bytes, np.uint8)
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    if frame is None:
+        print("Decode gagal!")
+        return jsonify({"error": "cv2.imdecode failed"}), 400
 
     # Simpan ukuran asli untuk scaling
     original_height, original_width = frame.shape[:2]
@@ -125,6 +132,7 @@ def process_frame():
         last_recognition_data = results
 
     return jsonify(results)
+
 # ==============================
 # Routes
 # ==============================
