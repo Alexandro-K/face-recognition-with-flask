@@ -14,45 +14,43 @@ import os
 import base64
 import numpy as np
 
-# ==============================
-# Flask Instance
-# ==============================
+# Instace flask utama
 app = Flask(__name__, template_folder='templates', static_folder='static', static_url_path='/')
 
 
-# ==============================
-# Load Known Faces
-# ==============================
+# Mengambil semua wajah dari database
 def load_known_faces():
-    # Taking data from database
+    # Query ke database
     user_data = (supabase.table('face-recognition-with-flask')
                 .select("user_id", "encoding")
                 .execute()
                 )
 
+    # Variabel untuk menampung id dan encoding
     known_ids = []
     known_encodings = []
 
-    # Saving data to known ids and encodings
+    # Menyimpan setiap data kedalam variables
     for data in user_data.data:
         known_ids.append(data['user_id'])
         encoding = data['encoding']
+        # Mengecek apabila pengambilan data dari database 
+        # masih berbentuk string
         if isinstance(encoding, str): 
-            encoding = json.loads(encoding) # Change into py list/array
+            encoding = json.loads(encoding) # Mengubahnya kedalam bentuk numpy array
         known_encodings.append(encoding)
         
     return known_ids, known_encodings
 
+# Load id dan encoding menggunakan functionnya
 known_ids, known_encodings = load_known_faces()
 
-# Global variables
-last_recognition_data = []
-last_unknown_encoding = None
-data_lock = threading.Lock()
+# Global variables 
+last_recognition_data = [] # Untuk menyimpan hasil
+last_unknown_encoding = None # Menyimpan encoding yang akan dimasukkan kedalam database
+data_lock = threading.Lock() # Lock threading untuk mencegah bentrok antara pengambilan data dengan permintaan data
 
-# ==============================
-# Video Streaming & Recognition
-# ==============================
+# Mengambil frame dari kamera
 @app.route('/process_frame', methods=['POST'])
 def process_frame():
     global last_recognition_data, last_unknown_encoding
