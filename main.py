@@ -98,7 +98,7 @@ def process_frame():
             "height": bottom - top
         }
         
-        matches = face_recognition.compare_faces(known_encodings, face_enc, tolerance=0.65)
+        matches = face_recognition.compare_faces(known_encodings, face_enc, tolerance=0.6)
         face_distance = face_recognition.face_distance(known_encodings, face_enc)
 
         index = None
@@ -152,9 +152,6 @@ def add_user():
         username = request.form.get('username')
         jenis_kelamin = request.form.get("jenis-Kelamin")
         jurusan = request.form.get('jurusan')
-
-        # if last_unknown_encoding is None:
-        #     return "No unknown face to save", 400
 
         # Save new user to database
         supabase.table("face-recognition-with-flask").insert({
