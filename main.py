@@ -98,7 +98,7 @@ def process_frame():
             "height": bottom - top
         }
         
-        matches = face_recognition.compare_faces(known_encodings, face_enc, tolerance=0.6)
+        matches = face_recognition.compare_faces(known_encodings, face_enc, tolerance=0.65)
         face_distance = face_recognition.face_distance(known_encodings, face_enc)
 
         index = None
