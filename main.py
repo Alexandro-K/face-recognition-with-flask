@@ -68,7 +68,7 @@ def process_frame():
 
     if frame is None:
         print("Decode gagal!")
-        return jsonify({"error": "cv2.imdecode failed"}), 400
+        return jsonify([]), 200  
 
     # Simpan ukuran asli untuk scaling
     original_height, original_width = frame.shape[:2]
