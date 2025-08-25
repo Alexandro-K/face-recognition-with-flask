@@ -71,11 +71,15 @@ a:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-#overlay {
+.bbox-canvas{
     position: absolute;
     top: 0;
     left: 0;
     pointer-events: none;
+}
+
+.snapshot{
+    display:none;
 }
 
 /* Camera section end */
