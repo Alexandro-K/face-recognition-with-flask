@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender-dev \
     libxrender1 \
+    libx11-6:i386 \
+    libstdc++5:i386 \ 
     libxcb1 \
     libxau6 \
     libxdmcp6 \
