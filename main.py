@@ -20,30 +20,35 @@ app = Flask(__name__, template_folder='templates', static_folder='static', stati
 
 # Mengambil semua wajah dari database
 def load_known_faces():
-    user_data = supabase.table('face-recognition-with-flask').select("*").execute()
-    known_ids, known_encodings, known_info = [], [], []
+    # Query ke database
+    user_data = (supabase.table('face-recognition-with-flask')
+                .select("user_id", "encoding")
+                .execute()
+                )
+
+    # Variabel untuk menampung id dan encoding
+    known_ids = []
+    known_encodings = []
+
+    # Menyimpan setiap data kedalam variables
     for data in user_data.data:
         known_ids.append(data['user_id'])
         encoding = data['encoding']
-        if isinstance(encoding, str):
-            encoding = json.loads(encoding)
+        # Mengecek apabila pengambilan data dari database 
+        # masih berbentuk string
+        if isinstance(encoding, str): 
+            encoding = json.loads(encoding) # Mengubahnya kedalam bentuk numpy array
         known_encodings.append(encoding)
-        known_info.append({
-            "username": data.get("username", "Unknown"),
-            "jenis_kelamin": data.get("jenis_kelamin", "-"),
-            "jurusan": data.get("jurusan", "-")
-        })
-    return known_ids, known_encodings, known_info
+        
+    return known_ids, known_encodings
 
+# Load id dan encoding menggunakan functionnya
+known_ids, known_encodings = load_known_faces()
 
 # Global variables 
 last_recognition_data = [] # Untuk menyimpan hasil
 last_unknown_encoding = None # Menyimpan encoding yang akan dimasukkan kedalam database
 data_lock = threading.Lock() # Lock threading untuk mencegah bentrok antara pengambilan data dengan permintaan data
-
-# Load id dan encoding menggunakan functionnya
-with data_lock:
-    known_ids, known_encodings, known_info = load_known_faces()
 
 # Mengambil frame dari kamera
 @app.route('/process_frame', methods=['POST'])
@@ -103,9 +108,12 @@ def process_frame():
 
         if index is not None and matches[index]:
             user_id = known_ids[index]
-            if index is not None and matches[index]:
-                result = known_info[index].copy()
-                result["user_id"] = known_ids[index]
+            user_data = (supabase.table("face-recognition-with-flask")
+                         .select("user_id, username, jenis_kelamin, jurusan")
+                         .eq("user_id", user_id)
+                         .execute())
+            if user_data.data:
+                result = user_data.data[0]
                 result["face_box"] = face_box
                 result["is_known"] = True
                 results.append(result)
@@ -159,11 +167,8 @@ def add_user():
         }).execute()
 
         # Refresh known faces
-        global known_ids, known_encodings, known_info
-        with data_lock:
-            known_ids, known_encodings, known_info = load_known_faces()
-
-
+        global known_ids, known_encodings
+        known_ids, known_encodings = load_known_faces()
 
         last_unknown_encoding = None
         return redirect(url_for("index"))
@@ -184,10 +189,8 @@ def delete_user(user_id):
     supabase.table("face-recognition-with-flask").delete().eq("user_id", user_id).execute()
 
     # Refresh known faces
-    global known_ids, known_encodings, known_info
-    with data_lock:
-        known_ids, known_encodings, known_info = load_known_faces()
-
+    global known_ids, known_encodings
+    known_ids, known_encodings = load_known_faces()
 
     return jsonify({"message": f"User {user_id} deleted successfully"})
 
